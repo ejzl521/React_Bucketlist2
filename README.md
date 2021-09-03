@@ -1,6 +1,6 @@
 # React 토이 프로젝트 - 버킷리스트 만들기
 
-- Route, Redux, styled-components, transition 등등 사용
+- Firestore, Redux, styled-components, transition, Route 등등 사용
 - Redux모듈에 Firestore와 통신하는 함수를 만들어서 컴포넌트에서 이를 부르면 Firestore의 데이터와 Redux state가 변경된다.
 - 프로젝트를 끄고 다시 실행해도 Redux state가 그대로이다. Firestore를 사용하기 때문!!
 
