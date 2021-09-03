@@ -7,5 +7,5 @@
 
 ![2](https://user-images.githubusercontent.com/55455103/132017716-efdbb61e-418a-4fec-a15c-b91ee5e0ba3f.gif)
 
-프로젝트 자세한 설명 ↓↓↓
+# 프로젝트 자세한 설명 ↓↓↓
 - https://duckgugong.tistory.com/214
