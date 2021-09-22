@@ -1,6 +1,9 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { deleteBucketFB, updateBucketFB } from "./redux/modules/bucket";
+import Button from '@material-ui/core/Button';
+
+
 const Detail = (props) => {
 
     const dispatch = useDispatch();
@@ -11,18 +14,25 @@ const Detail = (props) => {
     return (
         <div>
             <h1>{bucket_list[bucket_index].text}</h1>
-            <button onClick={() => {
-                dispatch(deleteBucketFB(bucket_index));
-                props.history.goBack();
-            }}>
+
+            <Button
+                onClick={() => {
+                    dispatch(deleteBucketFB(bucket_index));
+                    props.history.goBack();
+                }}
+                variant="outlined"
+            >
                 삭제
-            </button>
-            <button onClick={() => {
-                dispatch(updateBucketFB(bucket_index));
-                props.history.goBack();
-            }}>
+            </Button>
+            <Button
+                onClick={() => {
+                    dispatch(updateBucketFB(bucket_index));
+                    props.history.goBack();
+                }}
+                variant="outlined"
+            >
                 완료
-            </button>
+            </Button>
         </div>
     );
 }

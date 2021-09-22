@@ -5,8 +5,10 @@ const LOAD = 'bucket/LOAD';
 const CREATE = 'bucket/CREATE';
 const DELETE = 'bucket/DELETE';
 const UPDATE = 'bucket/UPDATE';
+const LOADED = 'bucket/LOADED';
 // initialState 
 const initialState = {
+  loaded: false,
   list: [
     /*
     { text: "치킨 먹기", completed: false },
@@ -37,6 +39,10 @@ export const deleteBucket = (index) => {
   return { type: DELETE, index };
 }
 
+export const loaded = (loaded) => {
+  return { type: LOADED, loaded }
+}
+
 // Firestore에서 collection을 가져옴
 const bucket_db = firestore.collection("bucket");
 
@@ -45,7 +51,10 @@ const bucket_db = firestore.collection("bucket");
 export const loadBucketFB = () => {
   // 함수를 반환하는 미들웨어 부분
   return function (dispatch) {
+
+    dispatch(loaded(false))
     bucket_db.get().then((docs) => {
+
       // Firestore에서 가져온 데이터를 저장할 변수
       let bucket_data = [];
       // "bucket" 콜렉션의 모든 문서에서 데이터와 id를 가져옴!
@@ -58,6 +67,7 @@ export const loadBucketFB = () => {
       // 리덕스 모듈에서 action을 dispatch 해주므로 컴포넌트에서는 firestore와
       // 통신하는 함수를 불러주면 된다!
       dispatch(loadBucket(bucket_data))
+      dispatch(loaded(true));
     });
   }
 }
@@ -65,6 +75,7 @@ export const loadBucketFB = () => {
 // Firebase에 데이터를 추가하는 부분 (CREATE)
 export const createBucketFB = (bucket) => {
   return function (dispatch) {
+    dispatch(loaded(false));
     let bucket_data = { text: bucket, completed: false };
     bucket_db
       .add(bucket_data)
@@ -73,11 +84,13 @@ export const createBucketFB = (bucket) => {
         bucket_data = { id: docRef.id, ...bucket_data };
         // firestore에 데이터 추가를 성공했을 때는? 액션 디스패치!
         dispatch(createBucket(bucket_data));
+        dispatch(loaded(true));
       })
       .catch((err) => {
         // 여긴 에러가 났을 때 들어오는 구간입니다!
         console.log(err);
         window.alert('오류가 났네요! 나중에 다시 시도해주세요!');
+        dispatch(loaded(true));
       });
   };
 }
@@ -136,14 +149,14 @@ export default function reducer(state = initialState, action = {}) {
     case "bucket/LOAD":
       // Firestore에 데이터가 있을때 리턴
       if (action.bucket.length > 0) {
-        return { list: action.bucket };
+        return { ...state, list: action.bucket };
       }
       // 없으면 initialState를 리턴해줌
       return state;
 
     case "bucket/CREATE":
       const new_bucket_list = [...state.list, action.bucket];
-      return { list: new_bucket_list };
+      return { ...state, list: new_bucket_list };
 
     case "bucket/UPDATE":
       const update_bucket_list = state.list.map((item, index) => {
@@ -152,12 +165,15 @@ export default function reducer(state = initialState, action = {}) {
         }
         return item;
       })
-      return { list: update_bucket_list };
+      return { ...state, list: update_bucket_list };
 
     case "bucket/DELETE":
       const deleted_bucket_list = state.list.filter((item, index) => index !== action.index);
-      return { list: deleted_bucket_list };
+      return { ...state, list: deleted_bucket_list };
       
+    case "bucket/LOADED":
+      return { ...state, loaded: action.loaded }
+
     default:
       return state;
   }

@@ -2,18 +2,21 @@ import React from 'react';
 import styled from "styled-components";
 import BucketList from './BucketList';
 import Progress from './Progress';
+import Spinner from './Spinner';
+import Detail from "./Detail";
+import PageNotFound from './PageNotFound';
 import { withRouter } from "react-router";
 import { Route } from "react-router-dom";
-import Detail from "./Detail";
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { createBucketFB, loadBucketFB } from './redux/modules/bucket';
 import { Switch } from 'react-router';
 import './App.css';
-import PageNotFound from './PageNotFound';
+
 
 const App = (props) => {
 
   const text = React.useRef();
+  const loaded = useSelector(state => state.bucket.loaded);
 
   // Firestore에서 데이터 불러오기
   const dispatch = useDispatch();
@@ -32,13 +35,16 @@ const App = (props) => {
         <Title>내 버킷리스트</Title>
         <Progress />
         <Line />
-        {/*props가 있는 라우터는 history 객체를 props로 다시 받아줘야 함!!*/}
-        <Switch>
-          <Route exact path="/" render={(props) => (<BucketList history={props.history} />)} />
-          <Route path="/detail/:index" component={Detail} />
-          <Route component={PageNotFound} />
-        </Switch>
-
+        {loaded ? (       
+          <Switch>
+            {/*props가 있는 라우터는 history 객체를 props로 다시 받아줘야 함!!*/}
+            <Route exact path="/" render={(props) => (<BucketList history={props.history} />)} />
+            <Route path="/detail/:index" component={Detail} />
+            <Route component={PageNotFound} />
+          </Switch>
+        ) : (
+          <Spinner />
+        )}
       </Container>
       <Input>
         <input type="text" ref={text} />
